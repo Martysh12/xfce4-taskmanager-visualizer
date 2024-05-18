@@ -2,7 +2,7 @@
 
 # xfce4-taskmanager-visualizer
 
-<video src="docs/xfce4-taskmanager.mp4" width=180 />
+https://github.com/Martysh12/xfce4-taskmanager-visualizer/assets/49569238/31e0fa59-1551-4450-bc6f-ef353b77209d
 
 ----
 
