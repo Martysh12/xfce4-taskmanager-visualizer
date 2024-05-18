@@ -1,2 +1,2 @@
-SUBDIRS = icons
+SUBDIRS = audio icons
 

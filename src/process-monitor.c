@@ -13,6 +13,7 @@
 
 #include "process-monitor.h"
 #include "task-manager.h"
+#include "fft.h"
 
 #include <cairo.h>
 
@@ -44,6 +45,7 @@ static void xtm_process_monitor_finalize (GObject *object);
 static void xtm_process_monitor_get_property (GObject *object, guint property_id, GValue *value, GParamSpec *pspec);
 static void xtm_process_monitor_set_property (GObject *object, guint property_id, const GValue *value, GParamSpec *pspec);
 static gboolean xtm_process_monitor_draw (GtkWidget *widget, cairo_t *cr);
+static void xtm_process_draw_the_funny(cairo_t *cr, gint width, gint height);
 static void xtm_process_monitor_paint (XtmProcessMonitor *monitor, cairo_t *cr);
 
 
@@ -191,30 +193,34 @@ xtm_process_monitor_graph_surface_create (XtmProcessMonitor *monitor, gint width
 	cr = cairo_create (graph_surface);
 
 	/* Draw line and area below the line, distinguish between CPU (0) and Mem (1) color-wise */
-	cairo_translate (cr, step_size, 0);
+	// cairo_translate (cr, step_size, 0);
 	cairo_set_line_width (cr, 0.85);
 	cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
 	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
 	cairo_set_antialias (cr, CAIRO_ANTIALIAS_DEFAULT);
-	cairo_move_to (cr, width, height);
+	// cairo_move_to (cr, width, height);
 
 	/* Create a line before the call to cairo_translate,
 	 * to avoid creating a downward sloping line going off the graph */
-	peak = g_array_index (monitor->history, gfloat, 0);
-	cairo_line_to (cr, width, (1.0 - peak) * height);
+	// peak = g_array_index (monitor->history, gfloat, 0);
+	// cairo_line_to (cr, width, (1.0 - peak) * height);
 
-	for (i = 0; (step_size * (i - 1)) <= width; i++)
-	{
-		peak = g_array_index (monitor->history, gfloat, i);
-		cairo_translate (cr, -step_size, 0);
-		cairo_line_to (cr, width, (1.0 - peak) * height);
-	}
+
+	/* ORIGINAL CODE */
+	// for (i = 0; (step_size * (i - 1)) <= width; i++)
+	// {
+	// 	peak = g_array_index (monitor->history, gfloat, i);
+	// 	cairo_translate (cr, -step_size, 0);
+	// 	cairo_line_to (cr, width, (1.0 - peak) * height);
+	// }
+
+	xtm_process_draw_the_funny(cr, width, height);
 
 	if (monitor->type == 0)
 		xtm_process_monitor_cairo_set_source_rgba (cr, 1.0, 0.43, 0.0, 0.3, monitor->dark_mode);
 	else
 		xtm_process_monitor_cairo_set_source_rgba (cr, 0.67, 0.09, 0.32, 0.3, monitor->dark_mode);
-	cairo_line_to (cr, width, height);
+	// cairo_line_to (cr, width, height);
 	cairo_fill_preserve (cr);
 
 	if (monitor->type == 0)
@@ -224,30 +230,43 @@ xtm_process_monitor_graph_surface_create (XtmProcessMonitor *monitor, gint width
 	cairo_stroke (cr);
 
 	/* Draw Swap graph */
-	if (monitor->type == 1)
-	{
-		cairo_translate (cr, step_size * i, 0);
-		cairo_move_to (cr, width, height);
+	// if (monitor->type == 1)
+	// {
+	// 	cairo_translate (cr, step_size * i, 0);
+	// 	cairo_move_to (cr, width, height);
 
-		peak = g_array_index (monitor->history_swap, gfloat, 0);
-		cairo_line_to (cr, width, (1.0 - peak) * height);
+	// 	peak = g_array_index (monitor->history_swap, gfloat, 0);
+	// 	cairo_line_to (cr, width, (1.0 - peak) * height);
 
-		for (i = 0; (step_size * (i - 1)) <= width; i++)
-		{
-			peak = g_array_index (monitor->history_swap, gfloat, i);
-			cairo_translate (cr, -step_size, 0);
-			cairo_line_to (cr, width, (1.0 - peak) * height);
-		}
-		xtm_process_monitor_cairo_set_source_rgba (cr, 0.33, 0.04, 0.16, 0.3, monitor->dark_mode);
-		cairo_line_to (cr, width, height);
-		cairo_fill_preserve (cr);
-		xtm_process_monitor_cairo_set_source_rgba (cr, 0.33, 0.04, 0.16, 1.0, monitor->dark_mode);
-		cairo_stroke (cr);
-	}
+	// 	for (i = 0; (step_size * (i - 1)) <= width; i++)
+	// 	{
+	// 		peak = g_array_index (monitor->history_swap, gfloat, i);
+	// 		cairo_translate (cr, -step_size, 0);
+	// 		cairo_line_to (cr, width, (1.0 - peak) * height);
+	// 	}
+	// 	xtm_process_monitor_cairo_set_source_rgba (cr, 0.33, 0.04, 0.16, 0.3, monitor->dark_mode);
+	// 	cairo_line_to (cr, width, height);
+	// 	cairo_fill_preserve (cr);
+	// 	xtm_process_monitor_cairo_set_source_rgba (cr, 0.33, 0.04, 0.16, 1.0, monitor->dark_mode);
+	// 	cairo_stroke (cr);
+	// }
 
 	cairo_destroy (cr);
 
 	return graph_surface;
+}
+
+static void xtm_process_draw_the_funny(cairo_t *cr, gint width, gint height) {
+	float x_step = (float) width / FFT_SIZE;
+
+	cairo_move_to (cr, 0, height);
+
+	for (size_t i = 0; i < FFT_SIZE; i++) {
+		cairo_line_to (cr, i * x_step, height - fft_out[(size_t) (i * 0.007)] * height);
+	}
+
+	cairo_line_to (cr, width, height);
+	cairo_line_to (cr, 0, height);
 }
 
 static void

@@ -25,6 +25,18 @@
     </columns>
     <data>
       <row>
+        <col id="0">25</col>
+      </row>
+      <row>
+        <col id="0">50</col>
+      </row>
+      <row>
+        <col id="0">100</col>
+      </row>
+      <row>
+        <col id="0">250</col>
+      </row>
+      <row>
         <col id="0">500</col>
       </row>
       <row>

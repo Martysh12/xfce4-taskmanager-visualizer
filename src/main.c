@@ -15,19 +15,23 @@
 #include "process-window.h"
 #include "settings.h"
 #include "task-manager.h"
+#include "fft.h"
 
 #include <gio/gio.h>
 #include <gtk/gtk.h>
 #include <libxfce4ui/libxfce4ui.h>
 #include <xfconf/xfconf.h>
+#include <raylib.h>
 
 static XtmSettings *settings;
 static GtkWidget *window;
 static GtkStatusIcon *status_icon_or_null = NULL;
 static XtmTaskManager *task_manager;
 static guint timer_id;
+static guint audio_update_timer_id;
 static gboolean start_hidden = FALSE;
 static gboolean standalone = FALSE;
+static Music music;
 
 static GOptionEntry main_entries[] = {
 	{ "start-hidden", 0, G_OPTION_FLAG_IN_MAIN, G_OPTION_ARG_NONE, &start_hidden, "Don't open a task manager window", NULL },
@@ -183,7 +187,15 @@ collect_data (void)
 static gboolean
 init_timeout_cb (gpointer user_data)
 {
+	fft_analyze ();
 	collect_data ();
+	return TRUE;
+}
+
+static gboolean
+audio_update_timeout_cb (gpointer user_data)
+{
+	UpdateMusicStream (music);
 	return TRUE;
 }
 
@@ -194,6 +206,12 @@ init_timeout (void)
 
 	g_object_get (settings, "refresh-rate", &refresh_rate, NULL);
 	timer_id = g_timeout_add (refresh_rate, init_timeout_cb, NULL);
+}
+
+static void
+init_audio_update_timeout (void)
+{
+	audio_update_timer_id = g_timeout_add (1000 / 60, audio_update_timeout_cb, NULL);
 }
 
 static void
@@ -272,6 +290,13 @@ main (int argc, char *argv[])
 		gtk_widget_show (window);
 
 	g_signal_connect_swapped (app, "activate", G_CALLBACK (xtm_process_window_show), window);
+
+	/* Play audio */
+	InitAudioDevice ();
+	music = LoadMusicStream(AUDIO_DIR "/music.wav");
+	init_audio_update_timeout ();
+	PlayMusicStream(music);
+	AttachAudioStreamProcessor(music.stream, fft_stream_callback);
 
 	task_manager = xtm_task_manager_new (xtm_process_window_get_model (XTM_PROCESS_WINDOW (window)));
 

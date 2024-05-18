@@ -74,6 +74,7 @@ XDT_CHECK_PACKAGE([GTK3], [gtk+-3.0], [3.22.0])
 XDT_CHECK_PACKAGE([CAIRO], [cairo], [1.5.0])
 XDT_CHECK_PACKAGE([LIBXFCE4UI], [libxfce4ui-2], [4.14.0])
 XDT_CHECK_PACKAGE([XFCONF], [libxfconf-0], [4.14.0])
+XDT_CHECK_PACKAGE([RAYLIB], [raylib], [4.5.0])
 
 dnl ***********************************
 dnl *** Check for optional packages ***
@@ -154,6 +155,7 @@ data/icons/64x64/Makefile
 data/icons/96x96/Makefile
 data/icons/128x128/Makefile
 data/icons/scalable/Makefile
+data/audio/Makefile
 po/Makefile.in
 ])
 AC_OUTPUT
@@ -167,6 +169,7 @@ echo
 echo "* Libx11:        ${LIBX11_VERSION:-no}"
 echo "* Wnck:          ${WNCK_VERSION:-no}"
 echo "* Cairo:         ${CAIRO_VERSION}"
+echo "* Raylib:        ${RAYLIB_VERSION}"
 echo "* GTK+:          ${GTK3_VERSION}"
 echo "* Target OS:     $target_os ($ac_os_implementation)"
 echo "* Debug:         $enable_debug"

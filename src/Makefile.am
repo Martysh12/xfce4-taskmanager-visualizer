@@ -6,24 +6,28 @@ AM_CPPFLAGS =								\
 bin_PROGRAMS =								\
 	xfce4-taskmanager
 
-xfce4_taskmanager_CFLAGS =						\
-	$(CAIRO_CFLAGS)							\
-	$(LIBX11_CFLAGS)						\
-	$(LIBXMU_CFLAGS)						\
-	$(GTK3_CFLAGS)							\
-	$(WNCK_CFLAGS)							\
-	$(LIBXFCE4UI_CFLAGS)				\
-	$(XFCONF_CFLAGS)						\
+xfce4_taskmanager_CFLAGS =								\
+	-DAUDIO_DIR=\"$(datadir)/xfce4-taskmanager/audio\"	\
+	$(CAIRO_CFLAGS)										\
+	$(LIBX11_CFLAGS)									\
+	$(LIBXMU_CFLAGS)									\
+	$(GTK3_CFLAGS)										\
+	$(WNCK_CFLAGS)										\
+	$(LIBXFCE4UI_CFLAGS)								\
+	$(XFCONF_CFLAGS)									\
+	$(RAYLIB_CFLAGS)									\
 	$(NULL)
 
-xfce4_taskmanager_LDADD = 						\
-	$(CAIRO_LIBS)							\
-	$(LIBX11_LIBS)						\
-	$(LIBXMU_LIBS)						\
-	$(GTK3_LIBS) 						\
-	$(WNCK_LIBS)						\
-	$(LIBXFCE4UI_LIBS)			\
-	$(XFCONF_LIBS)					\
+xfce4_taskmanager_LDADD = 	\
+	-lm						\
+	$(CAIRO_LIBS)			\
+	$(LIBX11_LIBS)			\
+	$(LIBXMU_LIBS)			\
+	$(GTK3_LIBS) 			\
+	$(WNCK_LIBS)			\
+	$(LIBXFCE4UI_LIBS)		\
+	$(XFCONF_LIBS)			\
+	$(RAYLIB_LIBS)			\
 	$(NULL)
 
 xfce4_taskmanager_SOURCES =						\
@@ -31,13 +35,14 @@ xfce4_taskmanager_SOURCES =						\
 	process-window_ui.h					\
 	process-window.c		process-window.h		\
 	process-monitor.c		process-monitor.h		\
-	process-tree-model.c		process-tree-model.h		\
+	process-tree-model.c	process-tree-model.h		\
 	process-tree-view.c		process-tree-view.h		\
 	process-statusbar.c		process-statusbar.h		\
 	settings-dialog_ui.h									\
 	settings-dialog.c		settings-dialog.h		\
-	settings.c			settings.h			\
+	settings.c				settings.h			\
 	task-manager.c			task-manager.h			\
+	fft.c					fft.h			\
 	$(NULL)
 
 if HAVE_WNCK
