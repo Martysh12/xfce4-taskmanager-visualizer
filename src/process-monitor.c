@@ -16,6 +16,7 @@
 #include "fft.h"
 
 #include <cairo.h>
+#include <math.h>
 
 
 
@@ -262,7 +263,7 @@ static void xtm_process_draw_the_funny(cairo_t *cr, gint width, gint height) {
 	cairo_move_to (cr, 0, height);
 
 	for (size_t i = 0; i < FFT_SIZE; i++) {
-		cairo_line_to (cr, i * x_step, height - fft_out[(size_t) (i * 0.007)] * height);
+		cairo_line_to (cr, i * x_step, height - pow(fft_out[(size_t) (i * 0.007)], 3) * height);
 	}
 
 	cairo_line_to (cr, width, height);
