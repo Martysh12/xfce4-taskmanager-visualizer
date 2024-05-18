@@ -1,8 +1,8 @@
 [![License](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://gitlab.xfce.org/apps/xfce4-taskmanager/-/blob/master/COPYING)
 
-# xfce4-taskmanager
+# xfce4-taskmanager-visualizer
 
-The xfce4-taskmanager component is an easy to use graphical task manager.
+<video src="docs/xfce4-taskmanager.mp4" width=180 />
 
 ----
 
